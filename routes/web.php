@@ -11,6 +11,4 @@
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-});
+Route::match(['get', 'post'], '/', 'TrajectoryController@calculate');

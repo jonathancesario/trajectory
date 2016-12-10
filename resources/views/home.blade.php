@@ -51,7 +51,7 @@
             <div class="title">Trajectory</div>
         </div>
         <div class="container">
-            <form class="form-horizontal" method="POST" action="{{ url('/api/trajectory') }}">
+            <form class="form-horizontal" method="POST" action="{{ url(' ') }}">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="header left">Input</div>

@@ -2,6 +2,7 @@
 
 use App;
 use Input;
+use Request;
 use Khill\Lavacharts\Lavacharts;
 
 
@@ -9,6 +10,9 @@ class TrajectoryController extends Controller
 {
     public function calculate()
     {
+        if(Request::method() == 'GET')
+            return view('home');
+
         $parameters = Input::all();
 
         $lava = App::make(Lavacharts::class);
