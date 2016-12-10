@@ -35,14 +35,14 @@
             }
 
             .header {
-                font-size: 24px;
+                font-size: 26px;
                 font-weight: 400;
             }
             .right {
-                margin-left: 100px;
+                margin-left: 120px;
             }
             .left {
-                margin-left: 150px;
+                margin-left: 175px;
             }
         </style>
     </head>
