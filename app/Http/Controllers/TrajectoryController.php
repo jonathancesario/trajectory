@@ -30,7 +30,9 @@ class TrajectoryController extends Controller
 
         $lava->LineChart('Trajectory', $trajectory, [
             'hAxis' => ['title' => 'Horizontal Departures'],
-            'vAxis' => ['direction' => -1]
+            'vAxis' => ['direction' => -1],
+            'width' => 800,
+            'chartArea' => ['width' => 600]
         ]);
 
         return view('home', compact('lava'))->withInput($parameters);

@@ -20,13 +20,10 @@
                 margin: 0;
             }
 
-            .content {
-                text-align: center;
-            }
-
             .title {
                 font-size: 52px;
                 margin-bottom: 30px;
+                margin-left: 25px;
             }
 
             .control-label {
@@ -44,6 +41,10 @@
             .left {
                 margin-left: 175px;
             }
+
+            .width {
+                width: 60px;
+            }
         </style>
     </head>
     <body>
@@ -51,66 +52,58 @@
             <div class="title">Trajectory</div>
         </div>
         <div class="container">
-            <form class="form-horizontal" method="POST" action="{{ url(' ') }}">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="header left">Input</div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <label class="col-md-5 control-label">BUR</label>
-                                <div class="col-md-4">
-                                    <input type="text" class="form-control" name="bur" value={{Input::get('bur')}}>
-                                </div>
-                                <label class="col-md-2 control-label">deg/100feet</label>
+            <div class="col-md-3">
+                <form class="form-horizontal" method="POST" action="{{ url(' ') }}">
+                    <div class="header">Input</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-sm-1 col-md-2 control-label">BUR</label>
+                            <div class="col-xs-3 col-sm-2 col-md-4">
+                                <input type="text" class="form-control width" name="bur" value={{Input::get('bur')}}>
                             </div>
+                            <label class="col-xs-1 col-sm-1 col-md-1 control-label">deg/100feet</label>
                         </div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <label class="col-md-5 control-label">KOP</label>
-                                <div class="col-md-4">
-                                    <input type="text" class="form-control" name="kop" value={{Input::get('kop')}}>
-                                </div>
-                                <label class="col-md-1 control-label">feet</label>
+                        <div class="form-group">
+                            <label class="col-xs-2 col-sm-1 col-md-2 control-label">KOP</label>
+                            <div class="col-xs-3 col-sm-2 col-md-4">
+                                <input type="text" class="form-control width" name="kop" value={{Input::get('kop')}}>
                             </div>
+                            <label class="col-xs-1 col-sm-1 col-md-1 control-label">feet</label>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="header right">Target</div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <label class="col-md-4 control-label">TVD</label>
-                                <div class="col-md-4">
-                                    <input type="text" class="form-control" name="tvd" value={{Input::get('tvd')}}>
-                                </div>
-                                <label class="col-md-1 control-label">feet</label>
+                    <div class="header">Target</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-sm-1 col-md-2 control-label">TVD</label>
+                            <div class="col-xs-3 col-sm-2 col-md-4">
+                                <input type="text" class="form-control width" name="tvd" value={{Input::get('tvd')}}>
                             </div>
-                            <div class="form-group">
-                                <label class="col-md-4 control-label">North</label>
-                                <div class="col-md-4">
-                                    <input type="text" class="form-control" name="north" value={{Input::get('north')}}>
-                                </div>
-                                <label class="col-md-1 control-label">feet</label>
+                            <label class="col-xs-1 col-sm-1 col-md-1 control-label">feet</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-2 col-sm-1 col-md-2 control-label">North</label>
+                            <div class="col-xs-3 col-sm-2 col-md-4">
+                                <input type="text" class="form-control width" name="north" value={{Input::get('north')}}>
                             </div>
-                            <div class="form-group">
-                                <label class="col-md-4 control-label">East</label>
-                                <div class="col-md-4">
-                                    <input type="text" class="form-control" name="east" value={{Input::get('east')}}>
-                                </div>
-                                <label class="col-md-1 control-label">feet</label>
+                            <label class="col-xs-1 col-sm-1 col-md-1 control-label">feet</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-2 col-sm-1 col-md-2 control-label">East</label>
+                            <div class="col-xs-3 col-sm-2 col-md-4">
+                                <input type="text" class="form-control width" name="east" value={{Input::get('east')}}>
                             </div>
+                            <label class="col-xs-1 col-sm-1 col-md-1 control-label">feet</label>
                         </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <center>
+                    <div class="panel-body">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-btn fa-sign-in"></i>Calculate</button>
-                    </center>
-                </div>
-            </form>
-        </div>
-        <div class="container">
-            <div id="trajectory"></div>
-            <?php if(isset($lava)) echo $lava->render('LineChart', 'Trajectory', 'trajectory') ?>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-8">
+                <div id="trajectory"></div>
+                <?php if(isset($lava)) echo $lava->render('LineChart', 'Trajectory', 'trajectory') ?>
+            </div>
         </div>
     </body>
 </html>
