@@ -11,4 +11,4 @@
 |
 */
 
-Route::match(['get', 'post'], '/', 'TrajectoryController@calculate');
+Route::match(['get', 'post'], '/', 'TrajectoryController@show');
