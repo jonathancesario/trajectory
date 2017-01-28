@@ -63,13 +63,13 @@ class TrajectoryController extends Controller
         }
     }
 
-    private function generateChart($chart, $points, $name, $direction, $columnName)
+    private function generateChart($chart, $points, $name, $direction, $method)
     {
         /* initialize and setup charts */
         $trajectory = $chart->DataTable();
         $trajectory
             ->addNumberColumn('Horizontal Departures')
-            ->addNumberColumn($columnName)
+            ->addNumberColumn($method)
             ->addNumberColumn('Actual');
 
         /* calculate input and add data to charts */
@@ -81,7 +81,7 @@ class TrajectoryController extends Controller
         $depth = max(end($points)[1], end($points)[2]);
         $ticks = $this->getTicks($depth);
         $chart->LineChart($name, $trajectory, [
-            // 'hAxis' => ['title' => 'Horizontal Departures'],
+            'title' => $method,
             'vAxis' => [
                 'direction' => $direction,
                 'ticks' => $ticks

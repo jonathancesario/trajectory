@@ -12,10 +12,11 @@
 			<div class="modal fade" id="format" role="dialog">
 				<div class="modal-dialog">
 					<div class="modal-content">
-						<p>MD(ft), Inc(&deg), Azimuth(&deg) has to be filled.</p>
-						<p>TVD, North, East, and HD is optional. We will only generate it if the data is completed.</p>
-						<p>If you want to reduce the row, please block that particular row(s), right click on your mouse, and choose delete.
-						Otherwise, we will still treat it as a row and your file would be invalid.</p>
+						<p>MD(ft), Inc(&deg), Azimuth(&deg) have to be filled.</p>
+						<p>TVD, North, East, and HD are optional. We will only generate it if the data is completed.</p>
+						<p>Don't start the input with 0, we will add it for you.</p>
+						<p>If you want to reduce the row(s), please block that particular row(s), right click on your mouse, and choose delete.
+						Otherwise, we will still treat it as row(s) and your file would be invalid.</p>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -26,8 +27,8 @@
         <div class="form-group">
             <select class="selectpicker" name="method">
                 <option value="moc">MOC</option>
-                <!-- <option value="roc">ROC</option>
-                <option value="tan">Tangential</option>
+                <option value="roc">ROC</option>
+                <!-- <option value="tan">Tangential</option>
                 <option value="avg">Angle Averaging</option> -->
             </select>
         </div>
