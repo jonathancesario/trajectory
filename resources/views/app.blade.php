@@ -49,6 +49,11 @@
                 white-space: nowrap;
             }
 
+            .format {
+                font-size: 20px;
+                margin-bottom: 25px;
+            }
+
             .tab-content > .tab-pane,
             .pill-content > .pill-pane {
                 display: block;

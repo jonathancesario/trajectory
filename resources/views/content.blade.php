@@ -12,11 +12,16 @@
 			<div class="modal fade" id="format" role="dialog">
 				<div class="modal-dialog">
 					<div class="modal-content">
-						<p>MD(ft), Inc(&deg), Azimuth(&deg) have to be filled.</p>
-						<p>TVD, North, East, and HD are optional. We will only generate it if the data is completed.</p>
-						<p>Don't start the input with 0, we will add it for you.</p>
-						<p>If you want to reduce the row(s), please block that particular row(s), right click on your mouse, and choose delete.
-						Otherwise, we will still treat it as row(s) and your file would be invalid.</p>
+						<p class="format">
+							<b>Required</b><br>MD, Inc, Azimuth.<br>
+							<b>Optional</b><br>TVD, North, East, HD.<br>Actual line will only be generated if the data is completed.
+						</p>
+						<p class="format"><b>Unit</b><br>- Foot (MD, TVD, North, East, HD).<br>- Degree&deg (Inc, Azimuth).</p>
+						<p class="format">
+							<b>Notes</b><br>- Don't start the input with 0, we will add it for you.
+							<br>- If you want to reduce the row(s), please block that particular row(s), right click on your mouse, and choose delete.
+							Otherwise, we will still treat it as row(s) and your file would be invalid.
+						</p>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
