@@ -2,6 +2,7 @@
 
 use App\Exceptions\DataException;
 use App\ProjectionGenerator;
+use App\ProjectionNumerator;
 use App;
 use Excel;
 use Exception;
@@ -13,10 +14,12 @@ use Khill\Lavacharts\Lavacharts;
 class TrajectoryController extends Controller
 {
     private $generator;
+    private $numerator;
 
     public function __construct()
     {
         $this->generator = App::make(ProjectionGenerator::class);
+        $this->numerator = App::make(ProjectionNumerator::class);
     }
 
     public function show()
@@ -26,6 +29,7 @@ class TrajectoryController extends Controller
 
         $action = Input::get('action');
         $method = Input::get('method');
+
         if ($action == 'export') {
             $sample = $this->getSampleData();
             Excel::create('input-sample', function ($excel) use ($sample) {
@@ -39,9 +43,7 @@ class TrajectoryController extends Controller
         } else if ($action == 'import') {
             if (Input::hasFile('data')) {
     			$path = Input::file('data')->getRealPath();
-                $input = Excel::load($path, function($reader) {
-                    $reader->ignoreEmpty();
-                })->get()->toArray();
+                $input = Excel::load($path, function($reader) {})->get()->toArray();
 
                 try {
                     $actualInput = $this->validateInput($input);
@@ -49,123 +51,20 @@ class TrajectoryController extends Controller
                     return view('content')->with(['alert' => $exc->getMessage()]);
                 }
 
-                list($verticalPoints, $northEastPoints, $input) = call_user_func_array([$this->generator, $method], [$input, $actualInput]);
+                list($verticalPoints, $northEastPoints, $input) = call_user_func_array(
+                    [$this->numerator, $method], [$input, $actualInput]
+                );
 
-                $table = $this->generateTable($input);
+                $table = $this->generator->generateTable($input, $method);
 
                 $chart = App::make(Lavacharts::class);
-                $this->generateChart($chart, $verticalPoints, 'Vertical', -1, $this->getMethodName($method));
-                $this->generateChart($chart, $northEastPoints, 'NorthEast', 1, $this->getMethodName($method));
+                $this->generator->generateChart($chart, $verticalPoints, 'Vertical', -1, $method);
+                $this->generator->generateChart($chart, $northEastPoints, 'NorthEast', 1, $method);
 
                 return view('content', compact('chart'))->with(['table' => $table]);
     		}
             return view('content');
         }
-    }
-
-    private function generateChart($chart, $points, $name, $direction, $method)
-    {
-        /* initialize and setup charts */
-        $trajectory = $chart->DataTable();
-        $trajectory
-            ->addNumberColumn('Horizontal Departures')
-            ->addNumberColumn($method)
-            ->addNumberColumn('Actual');
-
-        /* calculate input and add data to charts */
-        foreach ($points as $row) {
-            $trajectory->addRow([$row[0], $row[1], $row[2]]);
-        }
-
-        /* generate the chart */
-        $depth = max(end($points)[1], end($points)[2]);
-        $ticks = $this->getTicks($depth);
-        $chart->LineChart($name, $trajectory, [
-            'title' => $method,
-            'vAxis' => [
-                'direction' => $direction,
-                'ticks' => $ticks
-            ],
-            'height' => 500,
-            'interpolateNulls' => true,
-            'series' => [
-                ['lineDashStyle' => [10, 10], 'color' => 'black'],
-                ['lineDashStyle' => [1]],
-             ]
-        ]);
-    }
-
-    private function generateTable($points)
-    {
-        $result = '<table class="table table-borderd"><thead><tr>';
-        foreach ($points[0] as $variable => $value) {
-            $column = $this->getColumnName($variable);
-            $result .= "<th>$column</th>";
-        }
-        $result .= '</tr></thead><tbody>';
-        foreach ($points as $row) {
-            $result .= '<tr>';
-            foreach ($row as $variable => $value) {
-                $result .= "<td>$value</td>";
-            }
-            $result .= '</tr>';
-        }
-        $result .= '</tbody></table>';
-        return $result;
-    }
-
-    private function getTicks($depth)
-    {
-        $ticks = [0];
-        $counter = 500;
-        while ($counter < $depth) {
-            $ticks[] = $counter;
-            $counter += 500;
-        }
-        $ticks[] = $counter;
-        return $ticks;
-    }
-
-    private function getColumnName($column)
-    {
-        $result = $column;
-        if ($column == 'md')
-            $result = 'MD (ft)';
-        if ($column == 'incDeg')
-            $result = 'Inc (&deg)';
-        if ($column == 'incRad')
-            $result = 'Inc (rad)';
-        if ($column == 'azimuthDeg')
-            $result = 'Azimuth (&deg)';
-        if ($column == 'azimuthRad')
-            $result = 'Azimuth (rad)';
-        if ($column == 'd1')
-            $result = 'D1';
-        if ($column == 'd2')
-            $result = 'DL (rad)';
-        if ($column == 'rf')
-            $result = 'RF';
-        if ($column == 'tvd')
-            $result = 'TVD';
-        if ($column == 'north')
-            $result = 'North';
-        if ($column == 'east')
-            $result = 'East';
-        if ($column == 'hd')
-            $result = 'HD';
-        return $result;
-    }
-
-    private function getMethodName($method)
-    {
-        if ($method == 'moc')
-            return 'MOC';
-        if ($method == 'roc')
-            return 'ROC';
-        if ($method == 'tan')
-            return 'Tangential';
-        if ($method == 'avg')
-            return 'Angle Averaging';
     }
 
     private function getSampleData()
@@ -192,7 +91,6 @@ class TrajectoryController extends Controller
     private function validateInput($input)
     {
         try {
-            return count($input);
             $actualInput = !is_null($input[0]['tvd']);
 
             for ($i = 0; $i < count($input)-1; $i++) {

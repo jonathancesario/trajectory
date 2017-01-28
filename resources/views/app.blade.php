@@ -45,8 +45,8 @@
                 text-align: left;
             }
 
-            .format {
-                color: black;
+            .column {
+                white-space: nowrap;
             }
 
             .tab-content > .tab-pane,

@@ -1,176 +1,97 @@
 <?php namespace App;
 
-use Exception;
-
 
 class ProjectionGenerator
 {
-    public function moc($input, $actualInput)
+    public function generateChart($chart, $points, $name, $direction, $method)
     {
-        $data = $this->initiateData(true);
+        $method = $this->getMethodName($method);
 
-        $counter = 1;
-        foreach ($input as $row) {
-            $data = $this->setGeneralVariable($data, $counter, $row);
-            $data[$counter]['d1'] = (cos($data[$counter]['incRad'] - $data[$counter-1]['incRad'])) -
-                ((sin($data[$counter]['incRad']) * sin($data[$counter-1]['incRad'])) *
-                (1 - cos($data[$counter]['azimuthRad'] - $data[$counter-1]['azimuthRad'])));
-            $data[$counter]['d2'] = atan(sqrt((1 / (pow($data[$counter]['d1'], 2))) - 1));
-            $data[$counter]['rf'] = (2 / $data[$counter]['d2']) * tan($data[$counter]['d2'] / 2);
-            $data[$counter]['tvd'] = ((($data[$counter]['md'] - $data[$counter-1]['md']) / 2) *
-                (cos($data[$counter-1]['incRad']) + cos($data[$counter]['incRad'])) * $data[$counter]['rf'])
-                + $data[$counter-1]['tvd'];
-            $data[$counter]['north'] = ((($data[$counter]['md'] - $data[$counter-1]['md']) / 2) *
-                ((sin($data[$counter-1]['incRad']) * cos($data[$counter-1]['azimuthRad'])) +
-                    (sin($data[$counter]['incRad']) * cos($data[$counter]['azimuthRad']))
-                ) * $data[$counter]['rf']) + $data[$counter-1]['north'];
-            $data[$counter]['east'] = (($data[$counter]['md'] - $data[$counter-1]['md']) / 2) *
-                (sin($data[$counter-1]['incDeg'] * pi() / 180) *
-                    sin($data[$counter-1]['azimuthDeg'] * pi() / 180) +
-                    (sin($data[$counter]['incDeg'] * pi() / 180) * sin($data[$counter]['azimuthDeg'] * pi() / 180))
-                ) * $data[$counter]['rf'] + $data[$counter-1]['east'];
-            $data[$counter]['hd'] = ($data[$counter]['md'] - $data[$counter-1]['md']) / 2
-                * (sin($data[$counter-1]['incRad']) + sin($data[$counter]['incRad']))
-                * $data[$counter]['rf'] + $data[$counter-1]['hd'];
-            $counter++;
+        /* initialize and setup charts */
+        $trajectory = $chart->DataTable();
+        $trajectory
+            ->addNumberColumn('Horizontal Departures')
+            ->addNumberColumn($method)
+            ->addNumberColumn('Actual');
+
+        /* add data to charts */
+        foreach ($points as $row) {
+            $trajectory->addRow([$row[0], $row[1], $row[2]]);
         }
 
-        return $this->getChartAndTableData($input, $actualInput, $data);
-    }
-
-    public function roc($input, $actualInput)
-    {
-        $data = $this->initiateData();
-
-        $counter = 1;
-        foreach ($input as $row) {
-            $data = $this->setGeneralVariable($data, $counter, $row);
-            $tvdDivision = ($data[$counter]['incDeg'] - $data[$counter-1]['incDeg']) * pi() / 180;
-            $data[$counter]['tvd'] = $tvdDivision ? (($data[$counter]['md'] - $data[$counter-1]['md'])
-                    * (sin($data[$counter]['incDeg'] * pi() / 180) - sin($data[$counter-1]['incDeg'] * pi() / 180))
-                    / $tvdDivision
-                ) + $data[$counter-1]['tvd'] : $data[$counter-1]['tvd'];
-            $northDivision = ($data[$counter]['incDeg'] - $data[$counter-1]['incDeg']) *
-                ($data[$counter]['azimuthDeg'] - $data[$counter-1]['azimuthDeg']) * pow(pi() / 180, 2);
-            $data[$counter]['north'] = $northDivision ? (($data[$counter]['md'] - $data[$counter-1]['md'])
-                    * (cos($data[$counter-1]['incDeg'] * pi() / 180) - cos($data[$counter]['incDeg'] * pi() / 180))
-                    * (sin($data[$counter]['azimuthDeg'] * pi() / 180) - sin($data[$counter-1]['azimuthDeg'] * pi() / 180))
-                    / $northDivision
-                ) + $data[$counter-1]['north'] : $data[$counter-1]['north'];
-            $eastDivision = ($data[$counter]['incDeg'] - $data[$counter-1]['incDeg']) *
-                ($data[$counter]['azimuthDeg'] - $data[$counter-1]['azimuthDeg']) * pow(pi() / 180, 2);
-            $data[$counter]['east'] = $eastDivision ? (($data[$counter]['md'] - $data[$counter-1]['md'])
-                    * (cos($data[$counter-1]['incDeg'] * pi() / 180) - cos($data[$counter]['incDeg'] * pi() / 180))
-                    * (cos($data[$counter-1]['azimuthDeg'] * pi() / 180) - cos($data[$counter]['azimuthDeg'] * pi() / 180))
-                    / $eastDivision
-                ) + $data[$counter-1]['east'] : $data[$counter-1]['east'];
-            $data[$counter]['hd'] = pow((pow($data[$counter]['north'], 2) + pow($data[$counter]['east'], 2)), 0.5);
-            $counter++;
-        }
-
-        return $this->getChartAndTableData($input, $actualInput, $data);
-    }
-
-    public function tan($input, $actualInput)
-    {
-        $data = $this->initiateData();
-
-        $counter = 1;
-        foreach ($input as $row) {
-            $data = $this->setGeneralVariable($data, $counter, $row);
-            $data[$counter]['tvd'] = (($data[$counter]['md'] - $data[$counter-1]['md']) * cos($data[$counter]['incRad']))
-                + $data[$counter-1]['tvd'];
-            $data[$counter]['north'] = (($data[$counter]['md'] - $data[$counter-1]['md']) * sin($data[$counter]['incRad'])
-                    * cos($data[$counter]['azimuthRad'])
-                ) + $data[$counter-1]['north'];
-            $data[$counter]['east'] = (($data[$counter]['md'] - $data[$counter-1]['md']) * sin($data[$counter]['incRad'])
-                    * sin($data[$counter]['azimuthRad'])
-                ) + $data[$counter-1]['east'];
-            $data[$counter]['hd'] = (($data[$counter]['md'] - $data[$counter-1]['md']) * sin($data[$counter]['incRad']))
-                + $data[$counter-1]['hd'];
-            $counter++;
-        }
-
-        return $this->getChartAndTableData($input, $actualInput, $data);
-    }
-
-    public function avg($input, $actualInput)
-    {
-        $data = $this->initiateData();
-
-        $counter = 1;
-        foreach ($input as $row) {
-            $data = $this->setGeneralVariable($data, $counter, $row);
-            $data[$counter]['tvd'] = (($data[$counter]['md'] - $data[$counter-1]['md'])
-                    * cos(($data[$counter]['incRad'] + $data[$counter-1]['incRad']) / 2)
-                ) + $data[$counter-1]['tvd'];
-            $data[$counter]['north'] = (($data[$counter]['md'] - $data[$counter-1]['md'])
-                    * sin(($data[$counter]['incRad'] + $data[$counter-1]['incRad']) / 2)
-                    * cos(($data[$counter]['azimuthRad'] + $data[$counter-1]['azimuthRad']) / 2)
-                ) + $data[$counter-1]['north'];
-            $data[$counter]['east'] = (($data[$counter]['md'] - $data[$counter-1]['md'])
-                    * sin(($data[$counter]['incRad'] + $data[$counter-1]['incRad']) / 2)
-                    * sin(($data[$counter]['azimuthRad'] + $data[$counter-1]['azimuthRad']) / 2)
-                ) + $data[$counter-1]['east'];
-            $data[$counter]['hd'] = (($data[$counter]['md'] - $data[$counter-1]['md'])
-                    * sin(($data[$counter]['incRad'] + $data[$counter-1]['incRad']) / 2)
-                ) + $data[$counter-1]['hd'];
-            $counter++;
-        }
-
-        return $this->getChartAndTableData($input, $actualInput, $data);
-    }
-
-    private function initiateData($moc = false)
-    {
-        $data[0] = [
-            'md' => 0, 'incDeg' => 0, 'incRad' => 0, 'azimuthDeg' => 0, 'azimuthRad' => 0,
-            'tvd' => 0, 'north' => 0, 'east' => 0, 'hd' => 0
-        ];
-        if ($moc) {
-            $data[0]['d1'] = 0;
-            $data[0]['d2'] = 0;
-            $data[0]['rf'] = 0;
-        }
-        return $data;
-    }
-
-    private function setGeneralVariable($data, $counter, $row)
-    {
-        $data[$counter]['md'] = $row['md'];
-        $data[$counter]['incDeg'] = $row['inc'];
-        $data[$counter]['incRad'] = $data[$counter]['incDeg'] * pi() / 180;
-        $data[$counter]['azimuthDeg'] = $row['azimuth'];
-        $data[$counter]['azimuthRad'] = $data[$counter]['azimuthDeg'] * pi() / 180;
-        return $data;
-    }
-
-    private function getChartAndTableData($input, $actualInput, $data)
-    {
-        array_unshift($input, [
-            'md' => 0, 'inc' => 0, 'azimuth' => 0, 'tvd' => 0, 'north' => 0, 'east' => 0, 'hd' => 0
+        /* generate the chart */
+        $depth = max(end($points)[1], end($points)[2]);
+        $ticks = $this->getTicks($depth);
+        $chart->LineChart($name, $trajectory, [
+            'title' => $method,
+            'vAxis' => [
+                'direction' => $direction,
+                'ticks' => $ticks
+            ],
+            'height' => 500,
+            'interpolateNulls' => true,
+            'series' => [
+                ['lineDashStyle' => [10, 10], 'color' => 'black'],
+                ['lineDashStyle' => [1]],
+             ]
         ]);
-        $input = $actualInput ? $input : [];
-
-        $verticalPoints = $this->getPoints($data, $input, 'hd', 'tvd');
-        $northEastPoints = $this->getPoints($data, $input, 'east', 'north');
-        return [$verticalPoints, $northEastPoints, $data];
     }
 
-    private function getPoints($data, $input, $var1, $var2)
+    public function generateTable($points, $method)
     {
-        $points = [];
-
-        for ($i = 0; $i < count($data)-1; $i++) {
-            $row = $data[$i];
-            $points[] = [$row[$var1], $row[$var2], null];
+        $method = $this->getMethodName($method);
+        $result = "<h3>$method</h3><table class='table table-borderd'><thead><tr>";
+        foreach ($points[0] as $variable => $value) {
+            $column = $this->getColumnName($variable);
+            $result .= "<th class='column'>$column</th>";
         }
-
-        for ($i = 0; $i < count($input)-1; $i++) {
-            $row = $input[$i];
-            $points[] = [$row[$var1], null, $row[$var2]];
+        $result .= '</tr></thead><tbody>';
+        foreach ($points as $row) {
+            $result .= '<tr>';
+            foreach ($row as $variable => $value) {
+                $result .= "<td>$value</td>";
+            }
+            $result .= '</tr>';
         }
+        $result .= '</tbody></table>';
+        return $result;
+    }
 
-        return $points;
+    private function getTicks($depth)
+    {
+        $ticks = [0];
+        $counter = 500;
+        while ($counter < $depth) {
+            $ticks[] = $counter;
+            $counter += 500;
+        }
+        $ticks[] = $counter;
+        return $ticks;
+    }
+
+    private function getMethodName($method)
+    {
+        if ($method == 'moc') return 'MOC';
+        if ($method == 'roc') return 'ROC';
+        if ($method == 'tan') return 'Tangential';
+        if ($method == 'avg') return 'Angle Averaging';
+    }
+
+    private function getColumnName($column)
+    {
+        $result = $column;
+        if ($column == 'md') $result = 'MD (ft)';
+        if ($column == 'incDeg') $result = 'Inc (&deg)';
+        if ($column == 'incRad') $result = 'Inc (rad)';
+        if ($column == 'azimuthDeg') $result = 'Azimuth (&deg)';
+        if ($column == 'azimuthRad') $result = 'Azimuth (rad)';
+        if ($column == 'd1') $result = 'D1';
+        if ($column == 'd2') $result = 'DL (rad)';
+        if ($column == 'rf') $result = 'RF';
+        if ($column == 'tvd') $result = 'TVD';
+        if ($column == 'north') $result = 'North';
+        if ($column == 'east') $result = 'East';
+        if ($column == 'hd') $result = 'HD';
+        return $result;
     }
 }
