@@ -29,7 +29,7 @@
                 <option value="moc">MOC</option>
                 <option value="roc">ROC</option>
                 <option value="tan">Tangential</option>
-                <!-- <option value="avg">Angle Averaging</option> -->
+                <option value="avg">Angle Averaging</option>
             </select>
         </div>
         <div class="form-group">

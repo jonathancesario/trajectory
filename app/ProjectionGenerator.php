@@ -94,6 +94,33 @@ class ProjectionGenerator
         return $this->getChartAndTableData($input, $actualInput, $data);
     }
 
+    public function avg($input, $actualInput)
+    {
+        $data = $this->initiateData();
+
+        $counter = 1;
+        foreach ($input as $row) {
+            $data = $this->setGeneralVariable($data, $counter, $row);
+            $data[$counter]['tvd'] = (($data[$counter]['md'] - $data[$counter-1]['md'])
+                    * cos(($data[$counter]['incRad'] + $data[$counter-1]['incRad']) / 2)
+                ) + $data[$counter-1]['tvd'];
+            $data[$counter]['north'] = (($data[$counter]['md'] - $data[$counter-1]['md'])
+                    * sin(($data[$counter]['incRad'] + $data[$counter-1]['incRad']) / 2)
+                    * cos(($data[$counter]['azimuthRad'] + $data[$counter-1]['azimuthRad']) / 2)
+                ) + $data[$counter-1]['north'];
+            $data[$counter]['east'] = (($data[$counter]['md'] - $data[$counter-1]['md'])
+                    * sin(($data[$counter]['incRad'] + $data[$counter-1]['incRad']) / 2)
+                    * sin(($data[$counter]['azimuthRad'] + $data[$counter-1]['azimuthRad']) / 2)
+                ) + $data[$counter-1]['east'];
+            $data[$counter]['hd'] = (($data[$counter]['md'] - $data[$counter-1]['md'])
+                    * sin(($data[$counter]['incRad'] + $data[$counter-1]['incRad']) / 2)
+                ) + $data[$counter-1]['hd'];
+            $counter++;
+        }
+
+        return $this->getChartAndTableData($input, $actualInput, $data);
+    }
+
     private function initiateData($moc = false)
     {
         $data[0] = [
