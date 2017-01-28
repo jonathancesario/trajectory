@@ -11,6 +11,8 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
 
         <style>
             html, body {
@@ -31,6 +33,32 @@
             .control-label {
                 font-family: 'Raleway', sans-serif;
                 font-weight: 400;
+            }
+
+            .selectpicker {
+                left: 50%;
+                right: auto;
+                transform: translate(-50%, 0);
+            }
+
+            .modal-content {
+                text-align: left;
+            }
+
+            .format {
+                color: black;
+            }
+
+            .tab-content > .tab-pane,
+            .pill-content > .pill-pane {
+                display: block;
+                height: 0;
+                overflow-y: hidden;
+            }
+
+            .tab-content > .active,
+            .pill-content > .active {
+                height: auto;
             }
         </style>
     </head>
