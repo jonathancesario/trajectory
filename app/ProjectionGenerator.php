@@ -49,7 +49,8 @@ class ProjectionGenerator
         foreach ($points as $row) {
             $result .= '<tr>';
             foreach ($row as $variable => $value) {
-                $result .= "<td>$value</td>";
+                $value = round($value, 4);
+                $result .= "<td class='number'>$value</td>";
             }
             $result .= '</tr>';
         }
@@ -88,10 +89,10 @@ class ProjectionGenerator
         if ($column == 'd1') $result = 'D1';
         if ($column == 'd2') $result = 'DL (rad)';
         if ($column == 'rf') $result = 'RF';
-        if ($column == 'tvd') $result = 'TVD';
-        if ($column == 'north') $result = 'North';
-        if ($column == 'east') $result = 'East';
-        if ($column == 'hd') $result = 'HD';
+        if ($column == 'tvd') $result = 'TVD (ft)';
+        if ($column == 'north') $result = 'North (ft)';
+        if ($column == 'east') $result = 'East (ft)';
+        if ($column == 'hd') $result = 'HD (ft)';
         return $result;
     }
 }

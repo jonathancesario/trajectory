@@ -125,15 +125,16 @@ class ProjectionNumerator
 
     private function initiateData($moc = false)
     {
-        $data[0] = [
-            'md' => 0, 'incDeg' => 0, 'incRad' => 0, 'azimuthDeg' => 0, 'azimuthRad' => 0,
-            'tvd' => 0, 'north' => 0, 'east' => 0, 'hd' => 0
-        ];
+        $data[0] = ['md' => 0, 'incDeg' => 0, 'incRad' => 0, 'azimuthDeg' => 0, 'azimuthRad' => 0];
         if ($moc) {
             $data[0]['d1'] = 0;
             $data[0]['d2'] = 0;
             $data[0]['rf'] = 0;
         }
+        $data[0]['tvd'] = 0;
+        $data[0]['north'] = 0;
+        $data[0]['east'] = 0;
+        $data[0]['hd'] = 0;
         return $data;
     }
 
