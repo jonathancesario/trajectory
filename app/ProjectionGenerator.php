@@ -8,6 +8,7 @@ class ProjectionGenerator
     public function generateChart($points, $name, $direction, $method)
     {
         $method = $this->getMethodName($method);
+        return [$points, $method];
 
         /* initialize and setup charts */
         $trajectory = Lava::DataTable();

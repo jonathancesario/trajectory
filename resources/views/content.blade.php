@@ -47,15 +47,15 @@
 </center>
 <div class="container">
     <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#verticalProjection">Projection - Vertical</a></li>
-        <li><a data-toggle="tab" href="#northEastProjection">Projection - North East</a></li>
+        <li class="active"><a data-toggle="tab" href="#verticalDiv">Projection - Vertical</a></li>
+        <li><a data-toggle="tab" href="#northEastDiv">Projection - North East</a></li>
         <li><a data-toggle="tab" href="#table">Table</a></li>
     </ul>
     <div class="tab-content">
-        <div id="verticalProjection" class="tab-pane fade in active">
+        <div id="verticalDiv" class="tab-pane fade in active">
 			<?php if (isset($chart)) echo \Lava::render('LineChart', 'Vertical', 'verticalProjection'); ?>
 		</div>
-		<div id="northEastProjection" class="tab-pane fade">
+		<div id="northEastDiv" class="tab-pane fade">
 			<?php if (isset($chart)) echo \Lava::render('LineChart', 'NorthEast', 'northEastProjection'); ?>
 		</div>
         <div id="table" class="tab-pane fade">

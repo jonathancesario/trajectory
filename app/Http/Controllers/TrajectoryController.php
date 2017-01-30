@@ -24,8 +24,11 @@ class TrajectoryController extends Controller
 
     public function show()
     {
+        $data = [
+            'verticalPoints' => [], 'northEastPoints' => [], 'method' => ''
+        ];
         if (Request::method() == 'GET')
-            return view('content');
+            return view('content')->with($data);
 
         $action = Input::get('action');
         $method = Input::get('method');
@@ -52,20 +55,33 @@ class TrajectoryController extends Controller
                     );
                 } catch (DivisionByZeroException $exc) {
                     $row = $exc->getMessage();
-                    return view('content')->with(['alert' => "Your file is not valid because of division by zero at line $row."]);
+                    return view('content')->with(array_merge([
+                        'alert' => "Your file is not valid because of division by zero at line $row."
+                    ], $data));
                 } catch (Exception $exc) {
-                    return view('content')->with(['alert' => $exc->getMessage()]);
+                    return view('content')->with(array_merge(['alert' => $exc->getMessage()], $data));
                 }
 
                 $table = $this->generator->generateTable($input, $method);
+                $method = $this->getMethodName($method);
 
-                $this->generator->generateChart($verticalPoints, 'Vertical', -1, $method);
-                $this->generator->generateChart($northEastPoints, 'NorthEast', 1, $method);
+                // list($verticalPoints, $method) = $this->generator->generateChart($verticalPoints, 'Vertical', -1, $method);
+                // $this->generator->generateChart($northEastPoints, 'NorthEast', 1, $method);
 
-                return view('content')->with(['chart' => true, 'table' => $table]);
+                return view('content')->with([
+                    'verticalPoints' => $verticalPoints, 'northEastPoints' => $northEastPoints,
+                    'method' => $method, 'table' => $table]);
     		}
-            return view('content');
+            return view('content')->with($data);
         }
+    }
+
+    private function getMethodName($method)
+    {
+        if ($method == 'moc') return 'Minimum of Curvature';
+        if ($method == 'roc') return 'Radius of Curvature';
+        if ($method == 'tan') return 'Tangential';
+        if ($method == 'avg') return 'Angle Averaging';
     }
 
     private function getSampleData()
