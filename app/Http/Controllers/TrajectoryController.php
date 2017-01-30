@@ -9,7 +9,6 @@ use Excel;
 use Exception;
 use Input;
 use Request;
-use Khill\Lavacharts\Lavacharts;
 
 
 class TrajectoryController extends Controller
@@ -60,11 +59,10 @@ class TrajectoryController extends Controller
 
                 $table = $this->generator->generateTable($input, $method);
 
-                $chart = App::make(Lavacharts::class);
-                $this->generator->generateChart($chart, $verticalPoints, 'Vertical', -1, $method);
-                $this->generator->generateChart($chart, $northEastPoints, 'NorthEast', 1, $method);
+                $this->generator->generateChart($verticalPoints, 'Vertical', -1, $method);
+                $this->generator->generateChart($northEastPoints, 'NorthEast', 1, $method);
 
-                return view('content', compact('chart'))->with(['table' => $table]);
+                return view('content')->with(['chart' => true, 'table' => $table]);
     		}
             return view('content');
         }

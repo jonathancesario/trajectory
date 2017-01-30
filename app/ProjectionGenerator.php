@@ -1,14 +1,16 @@
 <?php namespace App;
 
+use Lava;
+
 
 class ProjectionGenerator
 {
-    public function generateChart($chart, $points, $name, $direction, $method)
+    public function generateChart($points, $name, $direction, $method)
     {
         $method = $this->getMethodName($method);
 
         /* initialize and setup charts */
-        $trajectory = $chart->DataTable();
+        $trajectory = Lava::DataTable();
         $trajectory
             ->addNumberColumn('Horizontal Departures')
             ->addNumberColumn($method)
@@ -22,7 +24,7 @@ class ProjectionGenerator
         /* generate the chart */
         $depth = max(end($points)[1], end($points)[2]);
         $ticks = $this->getTicks($depth);
-        $chart->LineChart($name, $trajectory, [
+        Lava::LineChart($name, $trajectory, [
             'title' => $method,
             'vAxis' => [
                 'direction' => $direction,
