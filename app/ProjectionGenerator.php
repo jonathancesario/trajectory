@@ -71,8 +71,8 @@ class ProjectionGenerator
 
     private function getMethodName($method)
     {
-        if ($method == 'moc') return 'MOC';
-        if ($method == 'roc') return 'ROC';
+        if ($method == 'moc') return 'Minimum of Curvature';
+        if ($method == 'roc') return 'Radius of Curvature';
         if ($method == 'tan') return 'Tangential';
         if ($method == 'avg') return 'Angle Averaging';
     }

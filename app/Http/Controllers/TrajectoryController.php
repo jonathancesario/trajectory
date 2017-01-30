@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Exceptions\DataException;
+use App\Exceptions\DivisionByZeroException;
 use App\ProjectionGenerator;
 use App\ProjectionNumerator;
 use App;
@@ -47,13 +48,15 @@ class TrajectoryController extends Controller
 
                 try {
                     $actualInput = $this->validateInput($input);
+                    list($verticalPoints, $northEastPoints, $input) = call_user_func_array(
+                        [$this->numerator, $method], [$input, $actualInput]
+                    );
+                } catch (DivisionByZeroException $exc) {
+                    $row = $exc->getMessage();
+                    return view('content')->with(['alert' => "Your file is not valid because of division by zero at line $row."]);
                 } catch (Exception $exc) {
                     return view('content')->with(['alert' => $exc->getMessage()]);
                 }
-
-                list($verticalPoints, $northEastPoints, $input) = call_user_func_array(
-                    [$this->numerator, $method], [$input, $actualInput]
-                );
 
                 $table = $this->generator->generateTable($input, $method);
 

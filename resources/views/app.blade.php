@@ -68,7 +68,7 @@
         </style>
     </head>
     <body>
-        <div class="title">Trajectory</div>
+        <div class="title">Trajectory Evaluation</div>
         <div class="container">
             @yield('content')
         </div>

@@ -1,5 +1,7 @@
 <?php namespace App;
 
+use App\Exceptions\DivisionByZeroException;
+
 
 class ProjectionNumerator
 {
@@ -13,7 +15,9 @@ class ProjectionNumerator
             $data[$counter]['d1'] = (cos($data[$counter]['incRad'] - $data[$counter-1]['incRad'])) -
                 ((sin($data[$counter]['incRad']) * sin($data[$counter-1]['incRad'])) *
                 (1 - cos($data[$counter]['azimuthRad'] - $data[$counter-1]['azimuthRad'])));
+            if ($data[$counter]['d1'] == 0) throw new DivisionByZeroException($counter + 1);
             $data[$counter]['d2'] = atan(sqrt((1 / (pow($data[$counter]['d1'], 2))) - 1));
+            if ($data[$counter]['d2'] == 0) throw new DivisionByZeroException($counter + 1);
             $data[$counter]['rf'] = (2 / $data[$counter]['d2']) * tan($data[$counter]['d2'] / 2);
             $data[$counter]['tvd'] = ((($data[$counter]['md'] - $data[$counter-1]['md']) / 2) *
                     (cos($data[$counter-1]['incRad']) + cos($data[$counter]['incRad'])) * $data[$counter]['rf']

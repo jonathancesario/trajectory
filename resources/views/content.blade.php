@@ -31,8 +31,8 @@
         </div>
         <div class="form-group">
             <select class="selectpicker" name="method">
-                <option value="moc">MOC</option>
-                <option value="roc">ROC</option>
+                <option value="moc">Minimum of Curvature</option>
+                <option value="roc">Radius of Curvature</option>
                 <option value="tan">Tangential</option>
                 <option value="avg">Angle Averaging</option>
             </select>
