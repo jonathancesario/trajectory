@@ -53,10 +53,10 @@
     </ul>
     <div class="tab-content">
         <div id="verticalProjection" class="tab-pane fade in active">
-			<?php if (isset($chart)) echo Lava::render('LineChart', 'Vertical', 'verticalProjection'); ?>
+			<?php if (isset($chart)) echo \Lava::render('LineChart', 'Vertical', 'verticalProjection'); ?>
 		</div>
 		<div id="northEastProjection" class="tab-pane fade">
-			<?php if (isset($chart)) echo Lava::render('LineChart', 'NorthEast', 'northEastProjection'); ?>
+			<?php if (isset($chart)) echo \Lava::render('LineChart', 'NorthEast', 'northEastProjection'); ?>
 		</div>
         <div id="table" class="tab-pane fade">
 			<?php if (isset($table)) echo $table; ?>
