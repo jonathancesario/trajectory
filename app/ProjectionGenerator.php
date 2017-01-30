@@ -49,8 +49,8 @@ class ProjectionGenerator
         foreach ($points as $row) {
             $result .= '<tr>';
             foreach ($row as $variable => $value) {
-                $value = round(floatval($value), 4);
-                $result .= "<td class='number'>$value</td>";
+                $number = round(floatval($value), 4);
+                $result .= "<td class='number'>$number</td>";
             }
             $result .= '</tr>';
         }
