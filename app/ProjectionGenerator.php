@@ -50,6 +50,7 @@ class ProjectionGenerator
             $result .= '<tr>';
             foreach ($row as $variable => $value) {
                 $number = round(floatval($value), 4);
+                $number = sprintf("%.4f", $number);
                 $result .= "<td class='number'>$number</td>";
             }
             $result .= '</tr>';
