@@ -1,48 +1,10 @@
 <?php namespace App;
 
-use Lava;
 
-
-class ProjectionGenerator
+class TableGenerator
 {
-    public function generateChart($points, $name, $direction, $method)
-    {
-        $method = $this->getMethodName($method);
-        return [$points, $method];
-
-        /* initialize and setup charts */
-        $trajectory = Lava::DataTable();
-        $trajectory
-            ->addNumberColumn('Horizontal Departures')
-            ->addNumberColumn($method)
-            ->addNumberColumn('Actual');
-
-        /* add data to charts */
-        foreach ($points as $row) {
-            $trajectory->addRow([$row[0], $row[1], $row[2]]);
-        }
-
-        /* generate the chart */
-        $depth = max(end($points)[1], end($points)[2]);
-        $ticks = $this->getTicks($depth);
-        Lava::LineChart($name, $trajectory, [
-            'title' => $method,
-            'vAxis' => [
-                'direction' => $direction,
-                'ticks' => $ticks
-            ],
-            'height' => 500,
-            'interpolateNulls' => true,
-            'series' => [
-                ['lineDashStyle' => [10, 10], 'color' => 'black'],
-                ['lineDashStyle' => [1]],
-             ]
-        ]);
-    }
-
     public function generateTable($points, $method)
     {
-        $method = $this->getMethodName($method);
         $result = "<h3>$method</h3><table class='table table-borderd'><thead><tr>";
         foreach ($points[0] as $variable => $value) {
             $column = $this->getColumnName($variable);
@@ -62,19 +24,7 @@ class ProjectionGenerator
         return $result;
     }
 
-    private function getTicks($depth)
-    {
-        $ticks = [0];
-        $counter = 500;
-        while ($counter < $depth) {
-            $ticks[] = $counter;
-            $counter += 500;
-        }
-        $ticks[] = $counter;
-        return $ticks;
-    }
-
-    private function getMethodName($method)
+    public function getMethodName($method)
     {
         if ($method == 'moc') return 'Minimum of Curvature';
         if ($method == 'roc') return 'Radius of Curvature';

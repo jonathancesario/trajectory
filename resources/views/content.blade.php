@@ -14,12 +14,16 @@
 					<div class="modal-content">
 						<p class="format">
 							<b>Required</b><br>MD, Inc, Azimuth.<br>
-							<b>Optional</b><br>TVD, North, East, HD.<br>Actual line will only be generated if the data is completed.
+							<b>Optional</b><br>TVD, North, East, HD.
+							<br>Actual line will only be generated if the data is completed.
 						</p>
-						<p class="format"><b>Unit</b><br>- Foot (MD, TVD, North, East, HD).<br>- Degree&deg (Inc, Azimuth).</p>
+						<p class="format">
+							<b>Unit</b><br>- Foot (MD, TVD, North, East, HD).<br>- Degree&deg (Inc, Azimuth).
+						</p>
 						<p class="format">
 							<b>Notes</b><br>- Don't start the input with 0, we will add it for you.
-							<br>- If you want to reduce the row(s), please block that particular row(s), right click on your mouse, and choose delete.
+							<br>- If you want to reduce the row(s), please block that particular row(s),
+							right click on your mouse, and choose delete.
 							Otherwise, we will still treat it as row(s) and your file would be invalid.
 						</p>
 					</div>
@@ -52,15 +56,9 @@
         <li><a data-toggle="tab" href="#table">Table</a></li>
     </ul>
     <div class="tab-content">
-        <div id="verticalDiv" class="tab-pane fade in active">
-			<?php if (isset($chart)) echo \Lava::render('LineChart', 'Vertical', 'verticalProjection'); ?>
-		</div>
-		<div id="northEastDiv" class="tab-pane fade">
-			<?php if (isset($chart)) echo \Lava::render('LineChart', 'NorthEast', 'northEastProjection'); ?>
-		</div>
-        <div id="table" class="tab-pane fade">
-			<?php if (isset($table)) echo $table; ?>
-		</div>
+        <div id="verticalDiv" class="tab-pane fade in active"></div>
+		<div id="northEastDiv" class="tab-pane fade"></div>
+        <div id="table" class="tab-pane fade"><?php if (isset($table)) echo $table; ?></div>
     </div>
 </div>
 @endsection

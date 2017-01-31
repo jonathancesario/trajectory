@@ -54,6 +54,7 @@
         .format {
             font-size: 20px;
             margin-bottom: 25px;
+            margin-left: 5px;
         }
 
         .number {
@@ -66,15 +67,13 @@
             height: 0;
             overflow-y: hidden;
         }
-
         .tab-content > .active,
         .pill-content > .active {
             height: auto;
         }
     </style>
 
-    <!-- <script type="text/javascript" src="js/chart.js"></script> -->
-
+    <script type="text/javascript" src="js/chart.js"></script>
     <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawChart);
@@ -84,58 +83,21 @@
             var northEastPoints = <?php echo json_encode($northEastPoints); ?>;
             var method = <?php echo json_encode($method); ?>;
 
-            var data = getData('Vertical Section', method, verticalPoints);
-            var verticalData = google.visualization.arrayToDataTable(data);
-            var verticalOption = getOption(method, -1, getTicks(verticalPoints));
-            var verticalChart = new google.visualization.LineChart(document.getElementById('verticalDiv'));
+            if (verticalPoints.length > 0) {
+                var data = getData('Vertical Section', method, verticalPoints);
+                var verticalData = google.visualization.arrayToDataTable(data);
+                var verticalOption = getOption(method, -1, getTicks(verticalPoints));
+                var verticalChart = new google.visualization.LineChart(document.getElementById('verticalDiv'));
+                verticalChart.draw(verticalData, verticalOption);
 
-            var data = getData('West(-)/East(+)', method, northEastPoints);
-            var northEastData = google.visualization.arrayToDataTable(data);
-            var northEastOption = getOption(method, 1, getTicks(northEastPoints));
-            var northEastChart = new google.visualization.LineChart(document.getElementById('northEastDiv'));
-
-            verticalChart.draw(verticalData, verticalOption);
-            northEastChart.draw(northEastData, northEastOption);
-        }
-
-        function getData(xAxis, method, points) {
-            var data = [[xAxis, method, 'Actual']];
-            for (var i = 0; i < points.length; i++) {
-                data.push(points[i]);
+                var data = getData('West(-)/East(+)', method, northEastPoints);
+                var northEastData = google.visualization.arrayToDataTable(data);
+                var northEastOption = getOption(method, 1, getTicks(northEastPoints));
+                var northEastChart = new google.visualization.LineChart(document.getElementById('northEastDiv'));
+                northEastChart.draw(northEastData, northEastOption);
             }
-            return data;
-        }
-
-        function getOption(method, direction, ticks) {
-            return {
-                title: method,
-                vAxis: {
-                    direction: direction,
-                    ticks: ticks
-                },
-                height: 500,
-                interpolateNulls: true,
-                series: [
-                    {lineDashStyle: [10, 10], color: 'black'},
-                    {lineDashStyle: [1]},
-                ]
-            }
-        }
-
-        function getTicks(points) {
-            var lastPoint = points[points.length-1];
-            var depth = Math.max(lastPoint[1], lastPoint[2]);
-            ticks = [0];
-            counter = 500;
-            while (counter < depth) {
-                ticks.push(counter);
-                counter += 500;
-            }
-            ticks.push(counter);
-            return ticks;
         }
     </script>
-
 </head>
 <body>
     <div class="title">Trajectory Evaluation</div>

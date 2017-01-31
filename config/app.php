@@ -166,7 +166,6 @@ return [
         /*
          * Package Service Providers...
          */
-        Khill\Lavacharts\Laravel\LavachartsServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
         /*
