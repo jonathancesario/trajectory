@@ -35,6 +35,7 @@
         </div>
         <div class="form-group">
             <select class="selectpicker" name="method">
+				<option value="all">All</option>
                 <option value="moc">Minimum of Curvature</option>
                 <option value="roc">Radius of Curvature</option>
                 <option value="tan">Tangential</option>

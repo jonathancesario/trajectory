@@ -5,10 +5,32 @@ use App\Exceptions\DivisionByZeroException;
 
 class ProjectionNumerator
 {
+    public function calculate($input, $actualInput, $method)
+    {
+        return $method == 'all'
+            ? $this->calculateMethods($input, $actualInput)
+            : $this->calculateMethod($input, $actualInput, $method);
+    }
+
+    private function calculateMethods($input, $actualInput)
+    {
+        $moc = $this->moc($input, $actualInput);
+        $roc = $this->roc($input, $actualInput);
+        $tan = $this->tan($input, $actualInput);
+        $avg = $this->avg($input, $actualInput);
+        $data = [$moc, $roc, $tan, $avg];
+        return $this->getChartAndTableData($input, $actualInput, $data, 6);
+    }
+
+    private function calculateMethod($input, $actualInput, $method)
+    {
+        $data = [call_user_func_array([$this, $method], [$input, $actualInput])];
+        return $this->getChartAndTableData($input, $actualInput, $data, 3);
+    }
+
     public function moc($input, $actualInput)
     {
         $data = $this->initiateData(true);
-
         $counter = 1;
         foreach ($input as $row) {
             $data = $this->setGeneralVariable($data, $counter, $row);
@@ -36,14 +58,12 @@ class ProjectionNumerator
                 * $data[$counter]['rf'] + $data[$counter-1]['hd'];
             $counter++;
         }
-
-        return $this->getChartAndTableData($input, $actualInput, $data);
+        return $data;
     }
 
     public function roc($input, $actualInput)
     {
         $data = $this->initiateData();
-
         $counter = 1;
         foreach ($input as $row) {
             $data = $this->setGeneralVariable($data, $counter, $row);
@@ -69,14 +89,12 @@ class ProjectionNumerator
             $data[$counter]['hd'] = pow((pow($data[$counter]['north'], 2) + pow($data[$counter]['east'], 2)), 0.5);
             $counter++;
         }
-
-        return $this->getChartAndTableData($input, $actualInput, $data);
+        return $data;
     }
 
     public function tan($input, $actualInput)
     {
         $data = $this->initiateData();
-
         $counter = 1;
         foreach ($input as $row) {
             $data = $this->setGeneralVariable($data, $counter, $row);
@@ -92,14 +110,12 @@ class ProjectionNumerator
                 + $data[$counter-1]['hd'];
             $counter++;
         }
-
-        return $this->getChartAndTableData($input, $actualInput, $data);
+        return $data;
     }
 
     public function avg($input, $actualInput)
     {
         $data = $this->initiateData();
-
         $counter = 1;
         foreach ($input as $row) {
             $data = $this->setGeneralVariable($data, $counter, $row);
@@ -119,8 +135,7 @@ class ProjectionNumerator
                 ) + $data[$counter-1]['hd'];
             $counter++;
         }
-
-        return $this->getChartAndTableData($input, $actualInput, $data);
+        return $data;
     }
 
     private function initiateData($moc = false)
@@ -148,31 +163,77 @@ class ProjectionNumerator
         return $data;
     }
 
-    private function getChartAndTableData($input, $actualInput, $data)
+    private function getChartAndTableData($input, $actualInput, $data, $length)
     {
         array_unshift($input, [
             'md' => 0, 'inc' => 0, 'azimuth' => 0, 'tvd' => 0, 'north' => 0, 'east' => 0, 'hd' => 0
         ]);
         $input = $actualInput ? $input : [];
 
-        $verticalPoints = $this->getPoints($data, $input, 'hd', 'tvd');
-        $northEastPoints = $this->getPoints($data, $input, 'east', 'north');
+        $types = array_merge($data, [$input]);
+        list($verticalPoints, $northEastPoints) = $this->getChartData($types, $length);
+
+        $data = $this->getTableData($data, $length);
 
         return [$verticalPoints, $northEastPoints, $data];
     }
 
-    private function getPoints($data, $input, $var1, $var2)
+    private function getTableData($data, $length)
     {
-        $points = [];
-
-        for ($i = 0; $i < count($data)-1; $i++) {
-            $row = $data[$i];
-            $points[] = [$row[$var1], $row[$var2], null];
+        if ($length == 3) {
+            $result = array_values($data[0]);
+        } else {
+            $result = [];
+            $moc = $data[0];
+            $roc = $data[1];
+            $tan = $data[2];
+            $avg = $data[3];
+            for ($i = 0; $i < count($moc); $i++) {
+                $mocRow = $moc[$i];
+                $rocRow = $roc[$i];
+                $tanRow = $tan[$i];
+                $avgRow = $avg[$i];
+                $result[] = [
+                    $mocRow['md'], $mocRow['incDeg'], $mocRow['azimuthDeg'],
+                    $mocRow['tvd'], $mocRow['north'], $mocRow['east'], $mocRow['hd'],
+                    $rocRow['tvd'], $rocRow['north'], $rocRow['east'], $rocRow['hd'],
+                    $tanRow['tvd'], $tanRow['north'], $tanRow['east'], $tanRow['hd'],
+                    $avgRow['tvd'], $avgRow['north'], $avgRow['east'], $avgRow['hd'],
+                ];
+            }
         }
+        return $result;
+    }
 
-        for ($i = 0; $i < count($input)-1; $i++) {
-            $row = $input[$i];
-            $points[] = [$row[$var1], null, $row[$var2]];
+    private function getChartData($types, $length)
+    {
+        $verticalPoints = [];
+        $northEastPoints = [];
+        for ($i = 0; $i < count($types); $i++) {
+            $type = $types[$i];
+            $verticalPoints = $this->getPoints($verticalPoints, $type, 'hd', 'tvd', $i+1, $length);
+            $northEastPoints = $this->getPoints($northEastPoints, $type, 'east', 'north', $i+1, $length);
+        }
+        return [$verticalPoints, $northEastPoints];
+    }
+
+    private function getPoints($points, $data, $var1, $var2, $position, $length)
+    {
+        if (!empty($data)) {
+            for ($i = 0; $i < count($data); $i++) {
+                $row = $data[$i];
+                $temp = [];
+                $temp[] = $row[$var1];
+
+                for ($j = 1; $j < $length; $j++) {
+                    if ($j == $position) {
+                        $temp[] = $row[$var2];
+                    } else {
+                        $temp[] = null;
+                    }
+                }
+                $points[] = $temp;
+            }
         }
 
         return $points;

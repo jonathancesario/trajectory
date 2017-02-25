@@ -1,5 +1,19 @@
 function getData(xAxis, method, points) {
-    var data = [[xAxis, {label: method, type: 'number'}, {label: 'Actual', type: 'number'}]];
+    if (method == 'all') {
+        var data = [
+            [
+                xAxis,
+                {label: 'Minimum of Curvature', type: 'number'},
+                {label: 'Radius of Curvature', type: 'number'},
+                {label: 'Tangential', type: 'number'},
+                {label: 'Angle Averaging', type: 'number'},
+                {label: 'Actual', type: 'number'}
+            ]
+        ];
+    } else {
+        var data = [[xAxis, {label: method, type: 'number'}, {label: 'Actual', type: 'number'}]];
+    }
+
     for (var i = 0; i < points.length; i++) {
         data.push(points[i]);
     }
@@ -7,24 +21,46 @@ function getData(xAxis, method, points) {
 }
 
 function getOption(method, direction, ticks) {
-    return {
-        title: method,
+    if (method == 'all') {
+        var series = [
+            {lineDashStyle: [10, 10], color: 'red'},
+            {lineDashStyle: [1], color: 'blue'},
+            {lineDashStyle: [3, 4], color: 'orange'},
+            {lineDashStyle: [6, 2], color: 'green'},
+            {lineDashStyle: [1, 8], color: 'black'},
+        ];
+    } else {
+        var series = [
+            {lineDashStyle: [10, 10], color: getColor(method)},
+            {lineDashStyle: [1], color: 'black'}
+        ];
+    }
+
+    var option = {
         vAxis: {
             direction: direction,
             ticks: ticks
         },
         height: 500,
         interpolateNulls: true,
-        series: [
-            {lineDashStyle: [10, 10], color: 'black'},
-            {lineDashStyle: [1]},
-        ]
-    }
+        series: series
+    };
+
+    if (method != 'all')
+        option.title = method;
+
+    return option;
 }
 
 function getTicks(points) {
     var lastPoint = points[points.length-1];
-    var depth = Math.max(lastPoint[1], lastPoint[2]);
+
+    if (lastPoint.length == 6) {
+        var depth = Math.max(lastPoint[1], lastPoint[2], lastPoint[3], lastPoint[4], lastPoint[5]);
+    } else {
+        var depth = Math.max(lastPoint[1], lastPoint[2]);
+    }
+
     ticks = [0];
     counter = 500;
     while (counter < depth) {
@@ -32,5 +68,17 @@ function getTicks(points) {
         counter += 500;
     }
     ticks.push(counter);
+
     return ticks;
+}
+
+function getColor(method) {
+    if (method == 'Minimum of Curvature')
+        return 'red';
+    if (method == 'Radius of Curvature')
+        return 'blue';
+    if (method == 'Tangential')
+        return 'orange';
+    if (method == 'Angle Averaging')
+        return 'green';
 }

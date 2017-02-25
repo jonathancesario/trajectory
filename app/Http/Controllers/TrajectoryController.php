@@ -46,9 +46,7 @@ class TrajectoryController extends Controller
 
                     try {
                         $actualInput = $this->validateInput($input);
-                        list($verticalPoints, $northEastPoints, $input) = call_user_func_array(
-                            [$this->numerator, $method], [$input, $actualInput]
-                        );
+                        list($verticalPoints, $northEastPoints, $calculation) = $this->numerator->calculate($input, $actualInput, $method);
                     } catch (DivisionByZeroException $exc) {
                         $row = $exc->getMessage();
                         return view('content')->with(array_merge([
@@ -59,7 +57,7 @@ class TrajectoryController extends Controller
                     }
 
                     $method = $this->generator->getMethodName($method);
-                    $table = $this->generator->generateTable($input, $method);
+                    $table = $this->generator->generateTable($calculation, $method);
 
                     $data = [
                         'verticalPoints' => $verticalPoints, 'northEastPoints' => $northEastPoints,

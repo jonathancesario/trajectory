@@ -26,6 +26,16 @@
             margin: 0;
         }
 
+        .allTable {
+            overflow-x: scroll;
+            overflow-y: auto;
+            transform:rotateX(180deg);
+        }
+
+        .allTable table {
+            transform:rotateX(180deg);
+        }
+
         .title {
             text-align: center;
             font-size: 52px;
@@ -59,6 +69,10 @@
 
         .number {
             font-family: 'Arvo', serif;
+        }
+
+        .table > thead > tr > th {
+            vertical-align: middle;
         }
 
         .tab-content > .tab-pane,
