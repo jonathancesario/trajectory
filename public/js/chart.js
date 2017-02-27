@@ -17,17 +17,18 @@ function getData(xAxis, method, points) {
     for (var i = 0; i < points.length; i++) {
         data.push(points[i]);
     }
+    
     return data;
 }
 
 function getOption(method, direction, ticks) {
     if (method == 'all') {
         var series = [
-            {lineDashStyle: [10, 10], color: 'red'},
-            {lineDashStyle: [1], color: 'blue'},
-            {lineDashStyle: [3, 4], color: 'orange'},
-            {lineDashStyle: [6, 2], color: 'green'},
-            {lineDashStyle: [1, 8], color: 'black'},
+            {lineDashStyle: [14, 2, 2, 7], color: 'red'},
+            {lineDashStyle: [5, 1, 3], color: 'blue'},
+            {lineDashStyle: [4, 4], color: 'orange'},
+            {lineDashStyle: [2, 2], color: 'green'},
+            {lineDashStyle: [1], color: 'black'},
         ];
     } else {
         var series = [
@@ -54,12 +55,9 @@ function getOption(method, direction, ticks) {
 
 function getTicks(points) {
     var lastPoint = points[points.length-1];
-
-    if (lastPoint.length == 6) {
-        var depth = Math.max(lastPoint[1], lastPoint[2], lastPoint[3], lastPoint[4], lastPoint[5]);
-    } else {
-        var depth = Math.max(lastPoint[1], lastPoint[2]);
-    }
+    var comparison = lastPoint.slice(0);
+    comparison.shift();
+    var depth = Math.max.apply(Math, comparison);
 
     ticks = [0];
     counter = 500;

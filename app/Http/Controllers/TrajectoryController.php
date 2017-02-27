@@ -66,6 +66,7 @@ class TrajectoryController extends Controller
         		}
             }
         }
+        
         return view('content')->with($data);
     }
 
